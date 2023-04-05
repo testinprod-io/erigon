@@ -17,7 +17,6 @@ import (
 	"github.com/ledgerwatch/erigon/core/rawdb"
 	"github.com/ledgerwatch/erigon/core/types"
 	"github.com/ledgerwatch/erigon/core/types/accounts"
-	"github.com/ledgerwatch/erigon/eth/ethconfig"
 	"github.com/ledgerwatch/erigon/turbo/stages"
 	"github.com/ledgerwatch/erigon/turbo/trie"
 )
@@ -101,7 +100,7 @@ func TestRewardContract(t *testing.T) {
 	auraDB, require := memdb.NewTestDB(t), require.New(t)
 	engine, err := aura.NewAuRa(nil, auraDB, libcommon.Address{}, test.AuthorityRoundBlockRewardContract)
 	require.NoError(err)
-	m := stages.MockWithGenesisEngine(t, core.SokolGenesisBlock(), engine, false)
+	m := stages.MockWithGenesisEngine(t, core.ChiadoGenesisBlock(), engine, false)
 	m.EnableLogs()
 
 	var accBefore *accounts.Account
@@ -197,13 +196,9 @@ func TestRewardContract(t *testing.T) {
 // Check that the first block of Gnosis Chain, which doesn't have any transactions,
 // does not change the state root.
 func TestEmptyBlock(t *testing.T) {
-	if ethconfig.EnableHistoryV3InTest {
-		t.Skip("")
-	}
-
 	require := require.New(t)
 	genesis := core.GnosisGenesisBlock()
-	genesisBlock, _, err := genesis.ToBlock("")
+	genesisBlock, _, err := core.GenesisToBlock(genesis, "")
 	require.NoError(err)
 
 	genesis.Config.TerminalTotalDifficultyPassed = false
