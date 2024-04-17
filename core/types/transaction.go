@@ -93,12 +93,18 @@ type Transaction interface {
 	Unwrap() Transaction // If this is a network wrapper, returns the unwrapped tx. Otherwise returns itself.
 }
 
+type RollupCostData struct {
+	Zeroes, Ones uint64
+}
+
 // TransactionMisc is collection of miscellaneous fields for transaction that is supposed to be embedded into concrete
 // implementations of different transaction types
 type TransactionMisc struct {
 	// caches
 	hash atomic.Value //nolint:structcheck
 	from atomic.Value
+
+	rollupGas atomic.Pointer[RollupCostData]
 }
 
 // RLP-marshalled legacy transactions and binary-marshalled (not wrapped into an RLP string) typed (EIP-2718) transactions
